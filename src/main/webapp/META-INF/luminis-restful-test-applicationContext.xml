@@ -1,0 +1,55 @@
+<!-- *********************************************************************
+     Copyright 2008 SunGard Higher Education Inc.  All Rights Reserved.
+
+     This software includes proprietary, trade secret and confidential
+     information of SunGard Higher Education and its licensors.  Use
+     of this software is strictly subject to and governed by the terms
+     and conditions of a written software license agreement between
+     SunGard Higher Education or its legal predecessor, and the
+     institution to which such license for use has been granted.
+     *********************************************************************** -->
+<!-- *********************************************************************
+         Master configuration for DataSource , Entity Manager factory and
+         other global configuration stuff need across the application.
+       *******************************************************************  -->
+<!-- %%templatized-file%% -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+    <!-- Abstract bean for setting the bootstrap properties file location. -->
+    <bean id="configFileLocation" abstract="true">
+        <property name="location" value="classpath:bootstrap.properties"/>
+    </bean>
+
+    <!-- ==========================================================
+    | Instantiate property config placeholder to substitute properties
+    | in embedded context fragments
+    =============================================================== -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+          parent="configFileLocation" />
+
+    <bean id="nodeNameConsumer" abstract="true">
+        <property name="nodeName" value="${local.host}-luminis-restful-test"/>
+    </bean>
+
+    <!-- Abstract bean for mapping insecure to secure ports -->
+    <bean id="luminisPortMapping" abstract="true">
+        <property name="portMappings">
+            <map>
+                <entry key="${portal.http.port}" value="${portal.https.port}"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="personService" class="com.sghe.luminis.person.services.DelegatingPersonService"/>
+    <bean id="delegatedCommunitySvc" class="com.sghe.luminis.community.services.DelegatedCommunityService"/>
+    <bean id="nocccdLuminisService" class="edu.nocccd.portlets.lp.services.JDBCLuminisService" />
+
+    <import resource="luminis-restful-test-security.xml"/>
+    <import resource="classpath:META-INF/luminis-config-applicationContextFragment.xml" />
+    <import resource="classpath:META-INF/luminis-session-counter-applicationContext.xml"/>
+
+</beans>
